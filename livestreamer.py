@@ -1,5 +1,3 @@
-import time
-import os
 import subprocess
 import wx
 import wx.html2 as webview
@@ -146,6 +144,7 @@ class MainWindow(wx.Frame):
         print stream
         self.wv.LoadURL("http://www.twitch.tv/directory")
         subprocess.call(["livestreamer", "twitch.tv/" + stream, quality])
+        
 
     def OnManualButton(self,e):
         global stream
