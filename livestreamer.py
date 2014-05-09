@@ -106,25 +106,13 @@ class MainWindow(wx.Frame):
     def OnWebViewLoaded(self, evt):
         # The full document has loaded
         s = evt.GetURL()
-        if "javascript" in s:
-            print "not a stream page"
-        elif "api" in s:
-            print "not a stream page"
-        elif "chatdepot" in s:
-            print "not a stream page"
-        elif "twitter" in s:
-            print "not a stream page"
-        elif "facebook" in s:
-            print "not a stream page"
-        elif "cdn" in s:
-            print "not a stream page"
-        elif "directory/game/" in s:
-            print "not a stream page"
-        elif "directory#/directory" in s:
-            print "not a stream page"
-        elif "about:blank" in s:
-            print "not a stream page"
-        else:
+        bad = False
+        badwords = ["javascript","api","chatdepot","twitter","facebook","cdn","directory/game/","directory#/directory","about:blank"]
+        for word in badwords:
+            if word in s:
+                bad = True
+                print "not a stream page"
+        if not bad:
             self.current = evt.GetURL()
             print self.current
             global stream
