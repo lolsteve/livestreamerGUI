@@ -71,7 +71,7 @@ class MainWindow(wx.Frame):
 
     def OnAbout(self,e):
         # A message dialog box with an OK button. wx.OK is a standard ID in wxWidgets.
-        dlg = wx.MessageDialog( self, "GUI for livestreamer", "About Livestreamer Pro", wx.OK)
+        dlg = wx.MessageDialog( self, "GUI for livestreamer", "About LivestreamerGUI", wx.OK)
         dlg.ShowModal() # Show it
         dlg.Destroy() # finally destroy it when finished.
 
@@ -106,8 +106,9 @@ class MainWindow(wx.Frame):
     def OnWebViewLoaded(self, evt):
         # The full document has loaded
         s = evt.GetURL()
+        #print s
         bad = False
-        badwords = ["javascript","api","chatdepot","twitter","facebook","cdn","directory/game/","directory#/directory","about:blank"]
+        badwords = ["javascript","api","chatdepot","twitter","facebook","cdn-static","directory/game/","directory#/directory","about:blank"]
         for word in badwords:
             if word in s:
                 bad = True
@@ -131,8 +132,17 @@ class MainWindow(wx.Frame):
         global stream
         print stream
         self.wv.LoadURL("http://www.twitch.tv/directory")
-        subprocess.call(["livestreamer", "twitch.tv/" + stream, quality])
-        
+        #subprocess.call(["livestreamer", "twitch.tv/" + stream, quality])
+        check = subprocess.check_output(["livestreamer", "twitch.tv/" + stream, quality])
+        print check
+        if "The specified stream(s) \'" in check:
+            dlg2 = wx.MessageDialog( self, "Unavailable quality", "Error", wx.OK)
+            dlg2.ShowModal() # Show it
+            dlg2.Destroy() # finally destroy it when finished.
+        elif "No streams found on this URL:" in check:
+            dlg2 = wx.MessageDialog( self, "Stream offline or wrong name", "Error", wx.OK)
+            dlg2.ShowModal() # Show it
+            dlg2.Destroy() # finally destroy it when finished.
 
     def OnManualButton(self,e):
         global stream
@@ -143,9 +153,9 @@ class MainWindow(wx.Frame):
 
         if dlg.ShowModal() == wx.ID_OK:
             stream = dlg.GetValue()
-            check = subprocess.check_output(["livestreamer", "twitch.tv/" + stream + " " + quality + " -l error"])
+            check = subprocess.check_output(["livestreamer", "twitch.tv/" + stream + " " + quality])
             print check
-            if "Available streams:" in check:
+            if "The specified stream(s) \'" in check:
                 dlg2 = wx.MessageDialog( self, "Unavailable quality", "Error", wx.OK)
                 dlg2.ShowModal() # Show it
                 dlg2.Destroy() # finally destroy it when finished.
@@ -154,7 +164,7 @@ class MainWindow(wx.Frame):
             dlg.Destroy()
 
 app = wx.App(False)
-frame = MainWindow(None, "Livestreamer Pro")
+frame = MainWindow(None, "LivestreamerGUI")
 app.MainLoop()
 
 #os.system('livestreamer http://twitch.tv/misterslin best')
